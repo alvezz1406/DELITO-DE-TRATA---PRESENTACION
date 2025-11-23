@@ -1,0 +1,564 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww28900\viewh15840\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <!DOCTYPE html>\
+<html lang="es">\
+<head>\
+  <meta charset="UTF-8" />\
+  <title>Mapa digital \'96 Trata de personas</title>\
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\
+  <style>\
+    :root \{\
+      --bg: #050816;\
+      --bg-card: #0b1020;\
+      --accent: #4f46e5;\
+      --accent-soft: rgba(79, 70, 229, 0.2);\
+      --text-primary: #f9fafb;\
+\pard\tx720\tx1440\tx2160\tx2880\tx2992\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0       --text-secondary: #9ca3af;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0       --danger: #f97373;\
+      --radius-lg: 18px;\
+      --radius-sm: 10px;\
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.55);\
+      --transition-fast: 0.2s ease-out;\
+    \}\
+\
+    * \{\
+      box-sizing: border-box;\
+      margin: 0;\
+      padding: 0;\
+    \}\
+\
+    body \{\
+      min-height: 100vh;\
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",\
+        "Segoe UI", sans-serif;\
+      background: radial-gradient(circle at top, #111827 0, #020617 50%, #000 100%);\
+      color: var(--text-primary);\
+      display: flex;\
+      justify-content: center;\
+      padding: 24px;\
+    \}\
+\
+    .app \{\
+      max-width: 1100px;\
+      width: 100%;\
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98));\
+      border-radius: 24px;\
+      box-shadow: var(--shadow-soft);\
+      padding: 26px 26px 28px;\
+      border: 1px solid rgba(148, 163, 184, 0.15);\
+      backdrop-filter: blur(18px);\
+    \}\
+\
+    header \{\
+      margin-bottom: 22px;\
+      display: flex;\
+      flex-direction: column;\
+      gap: 10px;\
+    \}\
+\
+    header h1 \{\
+      font-size: clamp(1.8rem, 3vw, 2.2rem);\
+      font-weight: 700;\
+      letter-spacing: 0.05em;\
+      display: flex;\
+      align-items: center;\
+      gap: 10px;\
+    \}\
+\
+    header h1 span.badge \{\
+      font-size: 0.8rem;\
+      font-weight: 600;\
+      padding: 4px 10px;\
+      border-radius: 999px;\
+      background: rgba(34, 197, 94, 0.13);\
+      color: #a7f3d0;\
+      border: 1px solid rgba(16, 185, 129, 0.35);\
+    \}\
+\
+    header p \{\
+      color: var(--text-secondary);\
+      font-size: 0.95rem;\
+      max-width: 780px;\
+      line-height: 1.5;\
+    \}\
+\
+    main \{\
+      display: grid;\
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);\
+      gap: 22px;\
+    \}\
+\
+    /* Timeline / Mapa digital */\
+    .map-section \{\
+      background: radial-gradient(circle at top left, #1e293b 0, #020617 60%);\
+      border-radius: var(--radius-lg);\
+      padding: 18px 18px 20px;\
+      border: 1px solid rgba(148, 163, 184, 0.25);\
+      position: relative;\
+      overflow: hidden;\
+    \}\
+\
+    .map-header \{\
+      display: flex;\
+      justify-content: space-between;\
+      align-items: baseline;\
+      margin-bottom: 14px;\
+      gap: 10px;\
+    \}\
+\
+    .map-header h2 \{\
+      font-size: 1rem;\
+      font-weight: 600;\
+      letter-spacing: 0.08em;\
+      text-transform: uppercase;\
+      color: #e5e7eb;\
+    \}\
+\
+    .map-header span \{\
+      font-size: 0.8rem;\
+      color: var(--text-secondary);\
+    \}\
+\
+    .timeline \{\
+      position: relative;\
+      padding: 28px 10px 6px;\
+    \}\
+\
+    .timeline-line \{\
+      position: absolute;\
+      left: 20px;\
+      right: 20px;\
+      top: 44px;\
+      height: 2px;\
+      background: linear-gradient(\
+        90deg,\
+        rgba(148, 163, 184, 0.3),\
+        rgba(79, 70, 229, 0.7),\
+        rgba(148, 163, 184, 0.3)\
+      );\
+      pointer-events: none;\
+    \}\
+\
+    .stations \{\
+      display: flex;\
+      justify-content: space-between;\
+      gap: 6px;\
+      position: relative;\
+      z-index: 1;\
+      flex-wrap: wrap;\
+    \}\
+\
+    .station \{\
+      position: relative;\
+      display: flex;\
+      flex-direction: column;\
+      align-items: center;\
+      gap: 6px;\
+      min-width: 70px;\
+      cursor: pointer;\
+      padding-bottom: 6px;\
+    \}\
+\
+    .station-dot \{\
+      width: 22px;\
+      height: 22px;\
+      border-radius: 999px;\
+      border: 2px solid rgba(148, 163, 184, 0.7);\
+      background: radial-gradient(circle at 30% 30%, #ffffff, #0f172a);\
+      display: flex;\
+      align-items: center;\
+      justify-content: center;\
+      transition: transform var(--transition-fast), border-color var(--transition-fast),\
+        box-shadow var(--transition-fast), background var(--transition-fast);\
+      box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);\
+    \}\
+\
+    .station.active .station-dot \{\
+      border-color: var(--accent);\
+      background: radial-gradient(circle at 10% 0%, #eef2ff, #1d1b4b);\
+      transform: scale(1.1);\
+      box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.35);\
+    \}\
+\
+    .station-index \{\
+      font-size: 0.75rem;\
+      font-weight: 600;\
+      color: #e5e7eb;\
+    \}\
+\
+    .station-label \{\
+      font-size: 0.75rem;\
+      text-align: center;\
+      color: var(--text-secondary);\
+      max-width: 100px;\
+    \}\
+\
+    .station.active .station-label \{\
+      color: #c7d2fe;\
+      font-weight: 600;\
+    \}\
+\
+    .legend \{\
+      margin-top: 16px;\
+      display: grid;\
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);\
+      gap: 10px;\
+      font-size: 0.8rem;\
+      color: var(--text-secondary);\
+    \}\
+\
+    .legend-box \{\
+      padding: 10px 11px;\
+      border-radius: var(--radius-sm);\
+      background: rgba(15, 23, 42, 0.9);\
+      border: 1px solid rgba(148, 163, 184, 0.3);\
+    \}\
+\
+    .legend-box strong \{\
+      color: #e5e7eb;\
+      display: block;\
+      margin-bottom: 4px;\
+      font-size: 0.8rem;\
+    \}\
+\
+    /* Panel de contenido */\
+    .content-section \{\
+      background: radial-gradient(circle at top right, #1e293b 0, #020617 60%);\
+      border-radius: var(--radius-lg);\
+      padding: 18px 18px 20px;\
+      border: 1px solid rgba(148, 163, 184, 0.25);\
+      display: flex;\
+      flex-direction: column;\
+      gap: 12px;\
+    \}\
+\
+    .pill \{\
+      font-size: 0.75rem;\
+      display: inline-flex;\
+      align-items: center;\
+      gap: 6px;\
+      padding: 4px 10px;\
+      border-radius: 999px;\
+      background: rgba(15, 23, 42, 0.9);\
+      border: 1px solid rgba(148, 163, 184, 0.4);\
+      color: #e5e7eb;\
+    \}\
+\
+    .pill span.dot \{\
+      width: 8px;\
+      height: 8px;\
+      border-radius: 999px;\
+      background: var(--accent);\
+    \}\
+\
+    #station-title \{\
+      font-size: 1.15rem;\
+      font-weight: 600;\
+      margin-top: 4px;\
+    \}\
+\
+    #station-tagline \{\
+      font-size: 0.9rem;\
+      color: var(--text-secondary);\
+      margin-bottom: 4px;\
+    \}\
+\
+    #station-summary \{\
+      font-size: 0.9rem;\
+      color: #e5e7eb;\
+      line-height: 1.5;\
+    \}\
+\
+    #station-points \{\
+      margin-left: 16px;\
+      margin-top: 4px;\
+      display: grid;\
+      gap: 4px;\
+      font-size: 0.88rem;\
+      color: var(--text-secondary);\
+    \}\
+\
+    #station-points li::marker \{\
+      color: var(--accent);\
+    \}\
+\
+    .role-box \{\
+      margin-top: 6px;\
+      padding: 9px 10px;\
+      border-radius: var(--radius-sm);\
+      background: rgba(15, 23, 42, 0.95);\
+      border: 1px dashed rgba(129, 140, 248, 0.7);\
+      font-size: 0.82rem;\
+      color: #cbd5f5;\
+    \}\
+\
+    .role-box strong \{\
+      color: #e5e7eb;\
+    \}\
+\
+    .footer-hint \{\
+      margin-top: 2px;\
+      font-size: 0.78rem;\
+      color: var(--text-secondary);\
+      display: flex;\
+      justify-content: space-between;\
+      gap: 8px;\
+      flex-wrap: wrap;\
+    \}\
+\
+    .footer-hint span.key \{\
+      padding: 2px 7px;\
+      border-radius: 999px;\
+      border: 1px solid rgba(148, 163, 184, 0.5);\
+      font-size: 0.7rem;\
+      color: #e5e7eb;\
+    \}\
+\
+    @media (max-width: 840px) \{\
+      main \{\
+        grid-template-columns: minmax(0, 1fr);\
+      \}\
+      .app \{\
+        padding: 18px;\
+      \}\
+    \}\
+\
+    @media (max-width: 600px) \{\
+      .stations \{\
+        justify-content: flex-start;\
+        overflow-x: auto;\
+        padding-bottom: 4px;\
+      \}\
+      .station \{\
+        min-width: 80px;\
+      \}\
+      .timeline-line \{\
+        left: 10px;\
+        right: 60px;\
+      \}\
+    \}\
+  </style>\
+</head>\
+<body>\
+  <div class="app">\
+    <header>\
+      <h1>\
+        Mapa digital \'b7\
+        <span style="color:#a5b4fc;">Trata de Personas</span>\
+        <span class="badge">Exposici\'f3n final</span>\
+      </h1>\
+      <p>\
+        Instrumento visual para explicar, estaci\'f3n por estaci\'f3n, el proceso por el cual\
+        una persona puede ser captada, trasladada, explotada y \'97en el mejor de los casos\'97\
+        rescatada dentro de una red de trata de personas.\
+      </p>\
+    </header>\
+\
+    <main>\
+      <!-- Mapa / Timeline -->\
+      <section class="map-section" aria-label="Mapa digital de la trata de personas">\
+        <div class="map-header">\
+          <h2>Mapa del proceso</h2>\
+          <span>Hac\'e9 clic en cada estaci\'f3n durante la exposici\'f3n</span>\
+        </div>\
+\
+        <div class="timeline">\
+          <div class="timeline-line"></div>\
+          <div class="stations" id="stations-container">\
+            <!-- Se llena din\'e1micamente con JS -->\
+          </div>\
+        </div>\
+\
+        <div class="legend">\
+          <div class="legend-box">\
+            <strong>\'bfC\'f3mo usarlo en la exposici\'f3n?</strong>\
+            \'95 Cada integrante del grupo se hace cargo de una estaci\'f3n.<br />\
+            \'95 El/la que expone hace clic en su parada y desarrolla la explicaci\'f3n oral.\
+          </div>\
+          <div class="legend-box">\
+            <strong>Lectura jur\'eddica sugerida</strong>\
+            \'95 Ley 26.364 y 26.842 (Argentina).<br />\
+            \'95 Protocolo de Palermo (ONU).<br />\
+            \'95 Jurisprudencia y casos reales que ustedes elijan.\
+          </div>\
+        </div>\
+      </section>\
+\
+      <!-- Panel de contenido de estaci\'f3n -->\
+      <section class="content-section" aria-label="Detalle de la estaci\'f3n seleccionada">\
+        <div class="pill">\
+          <span class="dot"></span>\
+          <span id="pill-label">Estaci\'f3n 1 de 5</span>\
+        </div>\
+\
+        <h2 id="station-title">T\'edtulo estaci\'f3n</h2>\
+        <p id="station-tagline">Subt\'edtulo / foco de la estaci\'f3n</p>\
+\
+        <p id="station-summary">\
+          Resumen de la estaci\'f3n. Se completa autom\'e1ticamente al hacer clic en el mapa.\
+        </p>\
+\
+        <ul id="station-points"></ul>\
+\
+        <div class="role-box" id="station-role">\
+          <strong>Sugerencia para quien expone:</strong>\
+          texto.\
+        </div>\
+\
+        <div class="footer-hint">\
+          <span>Tip: pueden vincular cada estaci\'f3n con noticias, fallos o an\'e9cdotas reales.</span>\
+          <span class="key">Click en las estaciones para cambiar el contenido</span>\
+        </div>\
+      </section>\
+    </main>\
+  </div>\
+\
+  <script>\
+    // Definici\'f3n de las estaciones del mapa\
+    const stations = [\
+      \{\
+        id: 1,\
+        label: "Contexto y vulnerabilidad",\
+        tagline: "\'bfPor qu\'e9 ciertas personas son blanco f\'e1cil de las redes de trata?",\
+        summary:\
+          "Antes de que exista un 'hecho puntual', ya hay un contexto: pobreza, falta de trabajo, violencia de g\'e9nero, migraci\'f3n interna o internacional, consumo problem\'e1tico, ruptura de v\'ednculos familiares. La red de trata detecta y explota esa vulnerabilidad.",\
+        points: [\
+          "Factores estructurales: desigualdad, falta de oportunidades, discriminaci\'f3n.",\
+          "Vulnerabilidad individual: edad (ni\'f1os, ni\'f1as, adolescentes), g\'e9nero, discapacidad, situaci\'f3n migratoria irregular.",\
+          "Promesas de empleo, estudio, pareja o 'vida mejor' que funcionan como anzuelo.",\
+          "La v\'edctima muchas veces no se percibe a s\'ed misma como posible v\'edctima de un delito."\
+        ],\
+        role:\
+          "Pod\'e9s arrancar conectando con la realidad: mencionar brevemente datos, noticias o un fallo emblem\'e1tico. La idea es que el p\'fablico entienda que la trata no empieza con el secuestro de pel\'edcula, sino con un contexto que habilita el abuso de poder."\
+      \},\
+      \{\
+        id: 2,\
+        label: "Captaci\'f3n",\
+        tagline: "El momento en que la red entra en contacto con la v\'edctima.",\
+        summary:\
+          "La captaci\'f3n es la fase en la que se establece el primer v\'ednculo directo entre la v\'edctima y la red de trata, generalmente mediante enga\'f1o, abuso de confianza o aprovechamiento de la situaci\'f3n de vulnerabilidad.",\
+        points: [\
+          "Uso de enga\'f1os: falsas ofertas laborales, castings, promesas de matrimonio, ayuda econ\'f3mica, etc.",\
+          "Abuso de relaciones preexistentes: pareja, familiares, amistades, conocidos del barrio.",\
+          "Uso de redes sociales y mensajer\'eda para contactar y generar confianza (grooming).",\
+          "La v\'edctima suele dar su 'consentimiento', pero ese consentimiento est\'e1 viciado por el enga\'f1o y la manipulaci\'f3n."\
+        ],\
+        role:\
+          "Ac\'e1 pod\'e9s explicar la diferencia entre consentimiento v\'e1lido y consentimiento viciado. Pod\'e9s citar brevemente la Ley 26.364/26.842 y remarcar que el consentimiento de la v\'edctima no es relevante cuando hay enga\'f1o, amenaza o aprovechamiento de la vulnerabilidad."\
+      \},\
+      \{\
+        id: 3,\
+        label: "Traslado y aislamiento",\
+        tagline: "Separar a la v\'edctima de su entorno y aumentar el control.",\
+        summary:\
+          "Una vez captada, la v\'edctima suele ser trasladada a otra ciudad, provincia o incluso pa\'eds. El objetivo es romper sus redes de apoyo, dificultar la denuncia y aumentar el aislamiento.",\
+        points: [\
+          "Traslados en autos, colectivos, camiones o incluso a pie, con documentos reales o falsos.",\
+          "Retenci\'f3n de DNI, pasaporte u otros documentos como forma de control.",\
+          "Corte de comunicaci\'f3n con familia y amigos (celular controlado, sin acceso a redes).",\
+          "Amenazas directas: da\'f1o a la v\'edctima o a su familia si intenta escapar o denunciar."\
+        ],\
+        role:\
+          "Pod\'e9s usar un ejemplo narrado (sin dar nombres reales) para que el p\'fablico imagine el miedo y la sensaci\'f3n de desorientaci\'f3n. Vinculalo con la idea de p\'e9rdida de libertad de movimiento y de autonom\'eda."\
+      \},\
+      \{\
+        id: 4,\
+        label: "Explotaci\'f3n",\
+        tagline: "El objetivo central de la red de trata.",\
+        summary:\
+          "La explotaci\'f3n es el n\'facleo del delito: la v\'edctima es utilizada como medio para obtener un beneficio econ\'f3mico o de otro tipo, bajo control y coacci\'f3n. Puede tratarse de explotaci\'f3n sexual, laboral, mendicidad forzada, matrimonio forzado, extracci\'f3n il\'edcita de \'f3rganos, entre otras modalidades.",\
+        points: [\
+          "Control total de horarios, movimientos, ingresos y espacios de la v\'edctima.",\
+          "Uso de violencia f\'edsica, psicol\'f3gica y sexual como mecanismo disciplinador.",\
+          "Endeudamiento ficticio: la v\'edctima 'debe' dinero a la red (viaje, ropa, comida, alojamiento).",\
+          "Naturalizaci\'f3n del abuso: la v\'edctima puede llegar a creer que no tiene otra opci\'f3n o que 'no es un delito'."\
+        ],\
+        role:\
+          "Ac\'e1 pueden introducir, si quieren, el foco espec\'edfico que eligieron (por ejemplo, explotaci\'f3n sexual o trata de \'f3rganos) y explicar c\'f3mo se ve concretamente en esa modalidad. Es un buen momento para cruzar lo jur\'eddico con la dimensi\'f3n humana del da\'f1o."\
+      \},\
+      \{\
+        id: 5,\
+        label: "Detecci\'f3n, rescate y justicia",\
+        tagline: "Cuando el Estado y la sociedad logran intervenir (o llegan tarde).",\
+        summary:\
+          "La salida de la red no siempre es ordenada ni r\'e1pida. Puede darse por denuncia de un tercero, por un operativo de investigaci\'f3n, por fuga de la v\'edctima o incluso por un hecho fortuito. Luego aparece todo el desaf\'edo de la asistencia integral y el acceso a la justicia.",\
+        points: [\
+          "Rol de fuerzas de seguridad, fiscal\'edas especializadas y organismos como programas de rescate y acompa\'f1amiento.",\
+          "Dificultades probatorias: miedo a declarar, revictimizaci\'f3n, prejuicios hacia las v\'edctimas.",\
+          "Necesidad de asistencia integral: vivienda, salud f\'edsica y mental, inserci\'f3n laboral, protecci\'f3n.",\
+          "Importancia de la reparaci\'f3n simb\'f3lica y material, y del acompa\'f1amiento a largo plazo."\
+        ],\
+        role:\
+          "Pod\'e9s cerrar resaltando que el objetivo del derecho penal no es solo castigar, sino tambi\'e9n proteger y reparar. Es un buen punto para introducir un fallo, un caso real argentino o una estad\'edstica que muestre avances y deudas pendientes."\
+      \}\
+    ];\
+\
+    const stationsContainer = document.getElementById("stations-container");\
+    const pillLabel = document.getElementById("pill-label");\
+    const titleEl = document.getElementById("station-title");\
+    const taglineEl = document.getElementById("station-tagline");\
+    const summaryEl = document.getElementById("station-summary");\
+    const pointsEl = document.getElementById("station-points");\
+    const roleEl = document.getElementById("station-role");\
+\
+    function renderStations() \{\
+      stations.forEach((st, index) => \{\
+        const stationEl = document.createElement("button");\
+        stationEl.className = "station";\
+        stationEl.type = "button";\
+        stationEl.setAttribute("data-index", index);\
+\
+        stationEl.innerHTML = `\
+          <div class="station-dot">\
+            <span class="station-index">$\{st.id\}</span>\
+          </div>\
+          <div class="station-label">$\{st.label\}</div>\
+        `;\
+\
+        stationEl.addEventListener("click", () => selectStation(index));\
+        stationsContainer.appendChild(stationEl);\
+      \});\
+    \}\
+\
+    function selectStation(index) \{\
+      const st = stations[index];\
+      // Actualizar estilos activos\
+      document\
+        .querySelectorAll(".station")\
+        .forEach((el) => el.classList.remove("active"));\
+      const activeButton = document.querySelector(\
+        `.station[data-index="$\{index\}"]`\
+      );\
+      if (activeButton) activeButton.classList.add("active");\
+\
+      // Actualizar texto del panel\
+      pillLabel.textContent = `Estaci\'f3n $\{st.id\} de $\{stations.length\}`;\
+      titleEl.textContent = st.label;\
+      taglineEl.textContent = st.tagline;\
+      summaryEl.textContent = st.summary;\
+\
+      pointsEl.innerHTML = "";\
+      st.points.forEach((p) => \{\
+        const li = document.createElement("li");\
+        li.textContent = p;\
+        pointsEl.appendChild(li);\
+      \});\
+\
+      roleEl.innerHTML =\
+        "<strong>Sugerencia para quien expone:</strong> " + st.role;\
+    \}\
+\
+    // Inicializar\
+    renderStations();\
+    selectStation(0);\
+  </script>\
+</body>\
+</html>\
+}
